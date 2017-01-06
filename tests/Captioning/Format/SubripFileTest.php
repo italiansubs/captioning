@@ -110,4 +110,29 @@ class SubripFileTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\Exception', $filename.' is not a proper .srt file.');
         new SubripFile($filename);
     }
+
+    public function testIfAFileWithTabsIsParsedProperlyWithLoosePattern()
+    {
+        $filename = __DIR__.'/../../Fixtures/subrip-with-tabs.srt';
+        $file = new SubripFile($filename, null, false, false);
+
+        // cues
+        $this->assertEquals(6, $file->getCuesCount());
+        $this->assertEquals('00:00:27,500', $file->getCue(3)->getStart());
+        $this->assertEquals('00:00:37,500', $file->getCue(3)->getStop());
+        $this->assertEquals("Sure! I've only had one today.", $file->getCue(3)->getText());
+    }
+
+
+    public function testIfAFileWithMultipleNewLinesBetweenCuesIsParsedProperlyWithLoosePattern()
+    {
+        $filename = __DIR__.'/../../Fixtures/subrip-with-multiple-newlines.srt';
+        $file = new SubripFile($filename, null, false, false);
+
+        // cues
+        $this->assertEquals(6, $file->getCuesCount());
+        $this->assertEquals('00:00:27,500', $file->getCue(3)->getStart());
+        $this->assertEquals('00:00:37,500', $file->getCue(3)->getStop());
+        $this->assertEquals("Sure! I've only had one today.", $file->getCue(3)->getText());
+    }
 }

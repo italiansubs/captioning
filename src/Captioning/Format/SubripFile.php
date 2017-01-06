@@ -37,14 +37,14 @@ class SubripFile extends File
     [\d]{1,2}:[\d]{1,2}:[\d]{1,2}(?:,[\d]{1,3})?    # Start time. Milliseconds or leading zeroes not required.
     [ ]-->[ ]                                       # Time delimiter.
     [\d]{1,2}:[\d]{1,2}:[\d]{1,2}(?:,[\d]{1,3})?    # End time. Milliseconds or leading zeroes not required.
-    (?:\1[\S ]+)+                                   # Subtitle text.
+    (?:\1[\S\t ]+)+                                   # Subtitle text.
                    ### Other subtitles ###
     (?:
-        \1\1(?<=\r\n|\r|\n)[\d]+\1
+        \1+(?<=\r\n|\r|\n)[\d]+\1
         [\d]{1,2}:[\d]{1,2}:[\d]{1,2}(?:,[\d]{1,3})?
         [ ]-->[ ]
         [\d]{1,2}:[\d]{1,2}:[\d]{1,2}(?:,[\d]{1,3})?
-        (?:\1[\S ]+)+
+        (?:\1[\S\t ]+)+
     )*
     \1?
     \s* # Allow trailing whitespace
@@ -80,7 +80,12 @@ class SubripFile extends File
         $subtitleTime = '';
 
         foreach ($matches as $match) {
-            $subtitle = explode($this->lineEnding, $match, 3);
+
+            if(!$match) {
+                continue;
+            } 
+
+            $subtitle = explode($this->lineEnding, trim($match, $this->lineEnding), 3);
             $timeline = explode(' --> ', $subtitle[1]);
 
             $subtitleTimeStart = $timeline[0];
